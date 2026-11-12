@@ -2,7 +2,7 @@
   --bg:#f7f7f8; --surface:#fff; --surface2:#f1f2f4; --line:#e6e7ea;
   --text:#1b1c1f; --muted:#8b8e96; --accent:#d9762f; --accent-soft:rgba(217,118,47,.10);
   --ok:#2e9e7b; --danger:#d5554d; --shadow:0 8px 30px rgba(20,22,28,.10);
-  --r:12px; --top:56px; --rail:60px; --panel:320px;
+  --r:12px; --top:56px; --rail:74px; --panel:320px;
 }
 :root[data-theme="dark"]{
   --bg:#0f1115; --surface:#171a20; --surface2:#1e222a; --line:#282c35;
@@ -47,11 +47,12 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 .shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr) var(--panel);height:calc(100dvh - var(--top))}
 .rail{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0}
 .rail-spacer{flex:1}
-.rail-btn{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;color:var(--muted);transition:.15s;position:relative}
+.rail-btn{width:62px;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:10px;color:var(--muted);transition:.15s;position:relative}
 .rail-btn:hover{background:var(--surface2);color:var(--text)}
 .rail-btn.on{background:var(--accent-soft);color:var(--accent)}
-.rail-btn.on::before{content:"";position:absolute;left:-10px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+.rail-btn.on::before{content:"";position:absolute;left:-6px;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
 .rail-btn svg{width:20px;height:20px}
+.rail-btn span{font-size:10px;line-height:1;letter-spacing:.02em;white-space:nowrap}
 .stage{overflow:auto;padding:20px;min-width:0}
 .panel{background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
 .panel-head{height:52px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--line)}
