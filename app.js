@@ -1,4 +1,4 @@
-/* PDF 工作台 · 核心框架（纯前端，文件不出浏览器） */
+/* 案头 · 核心框架（纯前端，文件不出浏览器） */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
 
 const W = {
@@ -142,14 +142,6 @@ image:`<div class="grp"><h3>选择图片</h3>
   <div class="fld"><select id="iFmt"><option value="image/jpeg">JPG（体积最小）</option><option value="image/png">PNG（保留透明）</option><option value="image/webp">WebP</option></select></div>
   <div class="fld"><label>不限体积时质量 <span id="iQVal">88</span></label><input type="range" id="iQ" min="10" max="95" value="88"></div>
   <label class="chk"><input type="checkbox" id="iKeep" checked> 保持宽高比</label></div>
-<div class="grp"><h3>换背景（证件照）</h3>
-  <div class="pills" id="bgPills">
-    <button class="pill on" data-bg="#ffffff">白底</button>
-    <button class="pill" data-bg="#438edb">蓝底</button>
-    <button class="pill" data-bg="#d94b4b">红底</button></div>
-  <div class="row"><div class="fld"><label>自定义颜色</label><input type="color" id="bgColor" value="#ffffff"></div>
-  <div class="fld"><label>相似度容差</label><input type="number" id="bgTol" value="55" min="10" max="140"></div></div>
-  <button class="act" id="bgRun" data-tip="自动识别四角的纯色底色并替换，适合证件照">一键换背景</button></div>
 <div class="grp"><button class="act primary" id="iRun">开始调整</button></div>`,
 
 export:`<div class="grp"><h3>导出为图片</h3>
