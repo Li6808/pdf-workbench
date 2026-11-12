@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f1115">
-<title>PDF 工作台</title>
+<title>案头</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
@@ -30,7 +30,7 @@
 </svg>
 
 <header class="top">
-  <div class="brand"><span class="mark">PDF</span><span class="name">工作台</span></div>
+  <div class="brand"><span class="mark">案头</span><span class="name">工具集</span></div>
   <div class="chip" id="fileChip"><span class="dim">未打开文档</span></div>
   <div class="spacer"></div>
   <button class="ico" id="btnUndo" data-tip="撤销上一步" disabled><svg><use href="#i-undo"/></svg></button>
@@ -57,8 +57,8 @@
     <section class="drop" id="drop">
       <div class="drop-card">
         <div class="drop-icon"><svg><use href="#i-open"/></svg></div>
-        <h1>把 PDF 拖进来</h1>
-        <p>或点击选择文件 · 可一次选多个自动合并</p>
+        <h1>把文件拖进来</h1>
+        <p>PDF 与图片 · 一次选多个 PDF 会自动合并</p>
         <button class="btn primary lg" id="btnPick">选择 PDF</button>
         <div class="drop-note">文件只在本浏览器内处理，不会上传</div>
       </div>
@@ -118,13 +118,13 @@
 <div class="toasts" id="toasts"></div>
 <div class="modal hidden" id="helpModal"><div class="modal-card">
   <button class="ico modal-x" id="helpClose"><svg><use href="#i-close"/></svg></button>
-  <h2>PDF 工作台</h2>
-  <p>所有处理都在你的浏览器里完成，文件不会上传到任何服务器。</p>
+  <h2>案头</h2>
+  <p>一个放文档与图片小工具的地方，以后还会继续加。所有处理都在浏览器里完成，文件不会上传到任何服务器。</p>
   <ul>
     <li><b>页面</b>：勾选哪页就删哪页、一键删封面、按页码批量删、旋转 / 复制 / 拖拽排序、追加合并；顶部可切「网格 / 单页」，单页模式能放大缩小、上下翻页</li>
     <li><b>转换</b>：Word、TXT、Markdown、网页、CSV</li>
     <li><b>编辑</b>：水印可选全部页 / 仅勾选页 / 指定某一页，另有页码、插入文字</li>
-    <li><b>图片</b>：证件照一键换白 / 蓝 / 红底、改尺寸、压到指定 KB，结果可直接下载</li>
+    <li><b>图片</b>：证件照改尺寸、压到指定 KB、整图对比，结果可直接下载</li>
     <li><b>导出</b>：分页图片、按范围拆分、选中页另存</li>
   </ul>
   <p class="dim">顶栏 ↶ ↷ 可撤销 / 重做，「保存」下载当前 PDF。</p>
