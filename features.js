@@ -168,6 +168,7 @@ W.bind.quick=()=>{
 
 /* ---------- 页面管理 ---------- */
 W.bind.pages=()=>{
+  $('#pReset').onclick=()=>resetAll();
   $('#pDelete').onclick=()=>{if(!need())return;const s=sel();if(!s.length)return toast('请先勾选页面','warn');
     if(s.length>=W.pages)return toast('至少保留一页','warn');
     W.mutate(p=>{for(let i=s.length-1;i>=0;i--)p.removePage(s[i])},`删除 ${s.length} 页`)};
