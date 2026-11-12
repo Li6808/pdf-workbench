@@ -4,7 +4,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
 const W = {
   bytes:null, name:'', pages:0, selected:new Set(),
   history:[], hIndex:-1, bind:{}, thumbs:[],
-  image:{sid:null,name:null,info:null}, mod:'pages', theme:null
+  image:{sid:null,name:null,info:null}, mod:'pages', theme:null,
+  view:'grid', curPage:0, zoom:1.2
 };
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -111,7 +112,10 @@ edit:`<div class="grp"><h3>水印</h3>
   <div class="fld"><input type="text" id="eWm" value="内部资料" placeholder="水印文字"></div>
   <div class="row"><div class="fld"><label>字号</label><input type="number" id="eSize" value="38" min="10" max="120"></div>
   <div class="fld"><label>透明度</label><input type="number" id="eOpacity" value="0.16" min="0.05" max="0.8" step="0.01"></div></div>
-  <button class="act primary" id="eWatermark" data-tip="中文水印会以图片方式嵌入，任意字体都支持">添加水印</button></div>
+  <div class="fld"><label>应用范围</label><select id="eScope">
+    <option value="all">全部页面</option><option value="selected">仅勾选页</option><option value="page">指定某一页</option></select></div>
+  <div class="fld"><label>指定页码（范围为「指定某一页」时生效）</label><input type="number" id="eOnePage" value="1" min="1"></div>
+  <button class="act primary" id="eWatermark" data-tip="中文水印以图片方式嵌入；可只加到某一页">添加水印</button></div>
 <div class="grp"><h3>页码</h3>
   <div class="fld"><input type="text" id="eTpl" value="第 {n} 页 / 共 {t} 页"></div>
   <button class="act" id="ePageNum" data-tip="{n} 当前页码，{t} 总页数">添加到所有页面</button></div>
@@ -138,6 +142,14 @@ image:`<div class="grp"><h3>选择图片</h3>
   <div class="fld"><select id="iFmt"><option value="image/jpeg">JPG（体积最小）</option><option value="image/png">PNG（保留透明）</option><option value="image/webp">WebP</option></select></div>
   <div class="fld"><label>不限体积时质量 <span id="iQVal">88</span></label><input type="range" id="iQ" min="10" max="95" value="88"></div>
   <label class="chk"><input type="checkbox" id="iKeep" checked> 保持宽高比</label></div>
+<div class="grp"><h3>换背景（证件照）</h3>
+  <div class="pills" id="bgPills">
+    <button class="pill on" data-bg="#ffffff">白底</button>
+    <button class="pill" data-bg="#438edb">蓝底</button>
+    <button class="pill" data-bg="#d94b4b">红底</button></div>
+  <div class="row"><div class="fld"><label>自定义颜色</label><input type="color" id="bgColor" value="#ffffff"></div>
+  <div class="fld"><label>相似度容差</label><input type="number" id="bgTol" value="55" min="10" max="140"></div></div>
+  <button class="act" id="bgRun" data-tip="自动识别四角的纯色底色并替换，适合证件照">一键换背景</button></div>
 <div class="grp"><button class="act primary" id="iRun">开始调整</button></div>`,
 
 export:`<div class="grp"><h3>导出为图片</h3>
@@ -263,6 +275,7 @@ async function refresh(){
     $('#btnUndo').disabled=W.hIndex<=0;
     $('#btnRedo').disabled=W.hIndex>=W.history.length-1;
     syncStage();updateSelInfo();
+    if(W.view==='single')renderSingle();
   }catch(e){
     if(doc){try{await doc.destroy()}catch(_){}}
     if(my===refreshSeq)toast('页面渲染失败：'+e.message,'err');
@@ -298,6 +311,49 @@ function renderGrid(){
     g.appendChild(c);
   });
 }
+
+/* ---------- 视图：网格预览 / 单页放大翻阅 ---------- */
+let singleSeq=0;
+async function renderSingle(){
+  if(W.view!=='single'||!W.bytes)return;
+  const my=++singleSeq;
+  let doc;
+  try{
+    doc=await pdfjsLib.getDocument({data:new Uint8Array(W.bytes)}).promise;
+    const n=doc.numPages;
+    W.curPage=Math.max(0,Math.min(W.curPage,n-1));
+    const p=await doc.getPage(W.curPage+1);
+    const vp=p.getViewport({scale:W.zoom});
+    const cv=document.createElement('canvas');
+    cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+    await p.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+    await doc.destroy();
+    if(my!==singleSeq)return;
+    const box=$('#singleCanvas');box.innerHTML='';
+    cv.className='page-canvas';box.appendChild(cv);
+    $('#pgInfo').textContent=`第 ${W.curPage+1} 页 / 共 ${n} 页`;
+    $('#zoomVal').textContent=Math.round(W.zoom*100)+'%';
+  }catch(e){if(doc){try{await doc.destroy()}catch(_){}}toast('单页渲染失败：'+e.message,'err')}
+}
+function setView(v){
+  W.view=v;
+  $('#btnGrid').classList.toggle('on',v==='grid');
+  $('#btnSingle').classList.toggle('on',v==='single');
+  $('#grid').classList.toggle('hidden',v!=='grid');
+  $('#singleView').classList.toggle('hidden',v!=='single');
+  if(v==='single')renderSingle();
+}
+$('#btnGrid').onclick=()=>setView('grid');
+$('#btnSingle').onclick=()=>setView('single');
+$('#pgPrev').onclick=()=>{W.curPage--;renderSingle()};
+$('#pgNext').onclick=()=>{W.curPage++;renderSingle()};
+$('#zoomIn').onclick=()=>{W.zoom=Math.min(3,W.zoom+.2);renderSingle()};
+$('#zoomOut').onclick=()=>{W.zoom=Math.max(.6,W.zoom-.2);renderSingle()};
+document.addEventListener('keydown',e=>{
+  if(W.view!=='single'||!W.bytes)return;
+  if(e.key==='ArrowLeft'){W.curPage--;renderSingle()}
+  if(e.key==='ArrowRight'){W.curPage++;renderSingle()}
+});
 
 /* ---------- 修改 / 历史 ---------- */
 W.mutate=async(fn,label)=>{
@@ -345,6 +401,10 @@ function resetAll(){
   if(W.image&&W.image.src)URL.revokeObjectURL(W.image.src);
   W.bytes=null;W.name='';W.pages=0;W.selected.clear();W.thumbs=[];
   W.history=[];W.hIndex=-1;W.image={};
+  W.view='grid';W.curPage=0;W.zoom=1.2;
+  $('#singleView').classList.add('hidden');$('#grid').classList.remove('hidden');
+  $('#btnGrid').classList.add('on');$('#btnSingle').classList.remove('on');
+  $('#imgDownload').disabled=true;
   $('#imgBefore').removeAttribute('src');$('#imgAfter').removeAttribute('src');
   $('#imgName').textContent='';$('#imgBeforeInfo').textContent='';$('#imgAfterInfo').textContent='';
   const ii=$('#iInfo');if(ii)ii.textContent='尚未选择图片';
