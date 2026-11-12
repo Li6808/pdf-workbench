@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>PDF 工作台</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-page" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="i-convert" viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 20 4-1 11-11-3-3L5 16zM14 6l3 3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m4 17 5-5 4 4 3-3 4 4"/></symbol>
+  <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v10H3z"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5M4 12h10a6 6 0 0 1 0 12" transform="translate(0 -4)"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5M20 12H10a6 6 0 0 0 0 12" transform="translate(0 -4)"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15A8 8 0 0 1 9 4a8 8 0 1 0 11 11z"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4 1-1.4 2M12 17h.01"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand"><span class="mark">PDF</span><span class="name">工作台</span></div>
+  <div class="chip" id="fileChip"><span class="dim">未打开文档</span></div>
+  <div class="spacer"></div>
+  <button class="ico" id="btnUndo" data-tip="撤销上一步" disabled><svg><use href="#i-undo"/></svg></button>
+  <button class="ico" id="btnRedo" data-tip="重做" disabled><svg><use href="#i-redo"/></svg></button>
+  <button class="ico" id="btnTheme" data-tip="切换深浅色"><svg><use href="#i-sun"/></svg></button>
+  <button class="btn primary" id="btnOpen"><svg><use href="#i-open"/></svg><span>打开 PDF</span></button>
+  <button class="btn" id="btnSave" data-tip="下载当前 PDF" disabled><svg><use href="#i-save"/></svg><span>保存</span></button>
+  <input type="file" id="fileInput" accept="application/pdf,.pdf" multiple hidden>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail">
+    <button class="rail-btn on" data-mod="quick" data-tip="快捷处理 · 删封面、批量删页"><svg><use href="#i-bolt"/></svg></button>
+    <button class="rail-btn" data-mod="pages" data-tip="页面管理 · 删除、旋转、排序"><svg><use href="#i-page"/></svg></button>
+    <button class="rail-btn" data-mod="convert" data-tip="格式转换 · Word、文字、网页"><svg><use href="#i-convert"/></svg></button>
+    <button class="rail-btn" data-mod="edit" data-tip="编辑批注 · 水印、页码"><svg><use href="#i-pen"/></svg></button>
+    <button class="rail-btn" data-mod="image" data-tip="图片压缩 · 改尺寸、压到指定 KB"><svg><use href="#i-image"/></svg></button>
+    <button class="rail-btn" data-mod="export" data-tip="拆分导出 · 图片、分段拆分"><svg><use href="#i-export"/></svg></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-btn" id="btnHelp" data-tip="使用说明"><svg><use href="#i-help"/></svg></button>
+  </nav>
+
+  <main class="stage">
+    <section class="drop" id="drop">
+      <div class="drop-card">
+        <div class="drop-icon"><svg><use href="#i-open"/></svg></div>
+        <h1>把 PDF 拖进来</h1>
+        <p>或点击选择文件 · 可一次选多个自动合并</p>
+        <button class="btn primary lg" id="btnPick">选择 PDF</button>
+        <div class="drop-note">文件只在本浏览器内处理，不会上传</div>
+      </div>
+    </section>
+
+    <section class="workspace hidden" id="workspace">
+      <div class="bar">
+        <div class="bar-title" id="barTitle">页面</div>
+        <div class="bar-meta" id="barMeta"></div>
+        <div class="spacer"></div>
+        <button class="mini" id="btnSelAll" data-tip="全选">全选</button>
+        <button class="mini" id="btnSelNone" data-tip="清空选择">清空</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="imgstage hidden" id="imgStage">
+      <div class="bar"><div class="bar-title">图片对比</div><div class="spacer"></div><span class="bar-meta" id="imgName"></span></div>
+      <div class="cmp">
+        <div class="cmp-card"><div class="cmp-label">原图</div><div class="cmp-box"><img id="imgBefore" alt="原图"></div><div class="cmp-info" id="imgBeforeInfo"></div></div>
+        <div class="cmp-card"><div class="cmp-label">结果</div><div class="cmp-box"><img id="imgAfter" alt="结果"></div><div class="cmp-info" id="imgAfterInfo"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="panel" id="panel">
+    <div class="panel-head"><h2 id="panelTitle">快捷处理</h2><button class="ico" id="panelClose" data-tip="收起面板"><svg><use href="#i-close"/></svg></button></div>
+    <div class="panel-body" id="panelBody"></div>
+    <div class="result" id="result"></div>
+  </aside>
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab on" data-mod="quick"><svg><use href="#i-bolt"/></svg><span>快捷</span></button>
+  <button class="tab" data-mod="pages"><svg><use href="#i-page"/></svg><span>页面</span></button>
+  <button class="tab" data-mod="convert"><svg><use href="#i-convert"/></svg><span>转换</span></button>
+  <button class="tab" data-mod="edit"><svg><use href="#i-pen"/></svg><span>编辑</span></button>
+  <button class="tab" data-mod="image"><svg><use href="#i-image"/></svg><span>图片</span></button>
+  <button class="tab" data-mod="export"><svg><use href="#i-export"/></svg><span>导出</span></button>
+</nav>
+
+<div class="tip" id="tip"></div>
+<div class="toasts" id="toasts"></div>
+<div class="modal hidden" id="helpModal"><div class="modal-card">
+  <button class="ico modal-x" id="helpClose"><svg><use href="#i-close"/></svg></button>
+  <h2>PDF 工作台</h2>
+  <p>所有处理都在你的浏览器里完成，文件不会上传到任何服务器。</p>
+  <ul>
+    <li><b>快捷</b>：一键删封面、按页码批量删页、裁剪、压缩、多页合一</li>
+    <li><b>页面</b>：勾选后删除 / 保留 / 旋转 / 复制，拖拽卡片调整顺序</li>
+    <li><b>转换</b>：Word、TXT、Markdown、网页、CSV</li>
+    <li><b>编辑</b>：水印、页码（中文也支持）</li>
+    <li><b>图片</b>：证件照改尺寸、压到指定 KB</li>
+    <li><b>导出</b>：分页图片、按范围拆分、选中页另存</li>
+  </ul>
+  <p class="dim">顶栏 ↶ ↷ 可撤销 / 重做，「保存」下载当前 PDF。</p>
+</div></div>
+
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="app.js"></script>
+<script src="features.js"></script>
+<script src="image.js"></script>
+</body>
+</html>
