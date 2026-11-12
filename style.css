@@ -28,6 +28,7 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 .top{height:var(--top);display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--line);position:relative;z-index:10}
 .brand{display:flex;align-items:baseline;gap:6px;margin-right:6px;white-space:nowrap}
 .brand .mark{font-weight:800;letter-spacing:-.5px;font-size:15px;color:var(--accent)}
+.brand .mark.seal{color:#b83c2c;letter-spacing:.14em;font-size:16px}
 .brand .name{font-weight:600;font-size:14px}
 .chip{display:flex;align-items:center;gap:8px;max-width:min(38vw,340px);padding:5px 11px;background:var(--surface2);border:1px solid var(--line);border-radius:20px;font-size:12px;overflow:hidden;white-space:nowrap}
 .chip b{font-weight:600;overflow:hidden;text-overflow:ellipsis}
