@@ -66,13 +66,27 @@
 
     <section class="workspace hidden" id="workspace">
       <div class="bar">
-        <div class="bar-title" id="barTitle">页面</div>
+        <div class="bar-title" id="barTitle">页面预览</div>
         <div class="bar-meta" id="barMeta"></div>
         <div class="spacer"></div>
+        <div class="view-switch">
+          <button class="mini on" id="btnGrid" data-tip="全部页面网格预览">网格</button>
+          <button class="mini" id="btnSingle" data-tip="单页上下翻阅，可放大缩小">单页</button>
+        </div>
         <button class="mini" id="btnSelAll" data-tip="全选">全选</button>
         <button class="mini" id="btnSelNone" data-tip="清空选择">清空</button>
       </div>
       <div class="grid" id="grid"></div>
+      <div class="single hidden" id="singleView">
+        <div class="single-bar">
+          <button class="mini" id="pgPrev">← 上一页</button>
+          <span class="pg-info" id="pgInfo">第 1 页 / 共 1 页</span>
+          <button class="mini" id="pgNext">下一页 →</button>
+          <div class="spacer"></div>
+          <button class="mini" id="zoomOut">－</button><span class="pg-info" id="zoomVal">120%</span><button class="mini" id="zoomIn">＋</button>
+        </div>
+        <div class="single-canvas" id="singleCanvas"></div>
+      </div>
     </section>
 
     <section class="imgstage hidden" id="imgStage">
@@ -81,6 +95,7 @@
         <div class="cmp-card"><div class="cmp-label">原图</div><div class="cmp-box"><img id="imgBefore" alt="原图"></div><div class="cmp-info" id="imgBeforeInfo"></div></div>
         <div class="cmp-card"><div class="cmp-label">结果</div><div class="cmp-box"><img id="imgAfter" alt="结果"></div><div class="cmp-info" id="imgAfterInfo"></div></div>
       </div>
+      <div class="img-actions"><button class="btn primary" id="imgDownload" disabled>⬇ 下载结果图片</button></div>
     </section>
   </main>
 
@@ -106,10 +121,10 @@
   <h2>PDF 工作台</h2>
   <p>所有处理都在你的浏览器里完成，文件不会上传到任何服务器。</p>
   <ul>
-    <li><b>页面</b>：勾选哪页就删哪页、一键删封面、按页码批量删、旋转 / 复制 / 拖拽排序、追加合并、多页合一</li>
+    <li><b>页面</b>：勾选哪页就删哪页、一键删封面、按页码批量删、旋转 / 复制 / 拖拽排序、追加合并；顶部可切「网格 / 单页」，单页模式能放大缩小、上下翻页</li>
     <li><b>转换</b>：Word、TXT、Markdown、网页、CSV</li>
-    <li><b>编辑</b>：水印、页码（中文也支持）</li>
-    <li><b>图片</b>：证件照改尺寸、压到指定 KB</li>
+    <li><b>编辑</b>：水印可选全部页 / 仅勾选页 / 指定某一页，另有页码、插入文字</li>
+    <li><b>图片</b>：证件照一键换白 / 蓝 / 红底、改尺寸、压到指定 KB，结果可直接下载</li>
     <li><b>导出</b>：分页图片、按范围拆分、选中页另存</li>
   </ul>
   <p class="dim">顶栏 ↶ ↷ 可撤销 / 重做，「保存」下载当前 PDF。</p>
