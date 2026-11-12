@@ -240,7 +240,15 @@ W.bind.edit=()=>{
   $('#eWatermark').onclick=async()=>{
     if(!need())return;const text=$('#eWm').value.trim();if(!text)return toast('请输入水印文字','warn');
     const size=+$('#eSize').value||38,op=Math.min(1,Math.max(.05,+$('#eOpacity').value||.16));
-    await W.draw(textPng(text,size,'#888888',op),'tile',size);toast('水印已添加');
+    const scope=$('#eScope').value;let pages;
+    if(scope==='selected'){pages=sel();if(!pages.length)return toast('请先勾选页面','warn')}
+    else if(scope==='page'){
+      const n=+$('#eOnePage').value||1;
+      if(n<1||n>W.pages)return toast('页码超出范围','warn');
+      pages=[n-1];
+    }else pages=all();
+    await W.draw(textPng(text,size,'#888888',op),'tile',size,pages);
+    toast(pages.length===W.pages?'水印已添加到全部页面':`水印已添加到第 ${pages.map(i=>i+1).join('、')} 页`);
   };
   $('#ePageNum').onclick=async()=>{
     if(!need())return;const tpl=$('#eTpl').value||'第 {n} 页 / 共 {t} 页';
@@ -267,10 +275,12 @@ W.bind.edit=()=>{
     await refresh();toast('文字已写入');
   };
 };
-W.draw=async(dataUrl,mode,size)=>{
+W.draw=async(dataUrl,mode,size,pages)=>{
   const pdf=await PDFLib.PDFDocument.load(W.bytes);
   const png=await pdf.embedPng(dataUrl); // 只嵌入一次，所有页面复用，避免体积暴涨
-  for(const pg of pdf.getPages()){
+  const list=(pages&&pages.length)?pages:pdf.getPageIndices();
+  for(const idx of list){
+    const pg=pdf.getPage(idx);
     const {width,height}=pg.getSize();
     const w=Math.min(png.width,width*.8),h=png.height*(w/png.width);
     if(mode==='tile'){
