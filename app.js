@@ -1,4 +1,4 @@
-/* 案头 · 核心框架（纯前端，文件不出浏览器） */
+/* 遇柒 · 核心框架（纯前端，文件不出浏览器） */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
 
 const W = {
