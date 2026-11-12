@@ -1,7 +1,7 @@
 {
-  "name": "PDF 工作台",
-  "short_name": "PDF工作台",
-  "description": "浏览器内运行的 PDF 与图片处理工具，文件不上传服务器",
+  "name": "案头",
+  "short_name": "案头",
+  "description": "文档与图片小工具集，浏览器内处理，文件不上传服务器",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
