@@ -1,4 +1,4 @@
-/* PDF 工作台 · 功能实现 */
+/* 案头 · 功能实现 */
 (() => {
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
