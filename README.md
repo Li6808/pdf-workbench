@@ -4,7 +4,7 @@
 
 ## 打开方式
 
-- 在线：GitHub Pages 地址（仓库 Settings → Pages 可查看）
+- 在线：https://li6808.github.io/pdf-workbench/ （GitHub Pages，仓库 `Li6808/pdf-workbench`）
 - 本地：直接双击 `index.html`，或用任意静态服务器打开本目录
 - 手机：浏览器打开后「添加到主屏幕」，即可全屏使用
 
