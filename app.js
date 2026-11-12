@@ -4,7 +4,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
 const W = {
   bytes:null, name:'', pages:0, selected:new Set(),
   history:[], hIndex:-1, bind:{}, thumbs:[],
-  image:{sid:null,name:null,info:null}, mod:'quick', theme:null
+  image:{sid:null,name:null,info:null}, mod:'pages', theme:null
 };
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -75,34 +75,30 @@ $('#btnTheme').onclick=()=>{
 };
 
 /* ---------- 面板（说明全部走 data-tip） ---------- */
-const TITLES={quick:'快捷处理',pages:'页面管理',convert:'格式转换',edit:'编辑批注',image:'图片压缩',export:'拆分导出'};
+const TITLES={pages:'页面',convert:'转换',edit:'编辑',image:'图片',export:'导出'};
 const PANELS={
-quick:`<div class="grp"><h3>删封面</h3>
-  <div class="fld"><label>删除开头几页</label><input type="number" id="qFirst" value="1" min="1" max="50"></div>
-  <button class="act primary" id="qDelFirst" data-tip="常用于去掉资料封面，填 1 点一下即可">删掉封面 / 前 N 页</button></div>
-<div class="grp"><h3>按页码批量删页</h3>
-  <div class="fld"><input type="text" id="qExpr" placeholder="1,3-5,12"></div>
-  <button class="act" id="qDelExpr" data-tip="页码从 1 开始，支持 1,3-5,12 这种写法">删除这些页</button></div>
-<div class="grp"><h3>一叠 PDF 批量处理</h3>
-  <button class="act" id="qBatch" data-tip="选多个文件，每个单独去封面后打包 ZIP，不合并">选多个 PDF 批量去封面</button>
-  <input type="file" id="qBatchInput" accept=".pdf" multiple hidden></div>
-<div class="grp"><h3>页面整理</h3>
+pages:`<div class="selinfo" id="pInfo">尚未勾选页面</div>
+<div class="grp"><h3>删除页面</h3>
+  <button class="act primary" id="pDelete" data-tip="在中间缩略图上勾选任意页，点这里只删这些页">删除勾选的页</button>
+  <div class="row"><button class="act" id="qDelFirst" data-tip="快捷删掉第 1 页">删封面</button>
+  <button class="act" id="qDelExpr">按页码删</button></div>
+  <div class="fld"><input type="text" id="qExpr" placeholder="页码：1,3-5,12"></div>
+  <div class="fld"><label>删封面时删掉开头几页</label><input type="number" id="qFirst" value="1" min="1" max="50"></div></div>
+<div class="grp"><h3>页面操作</h3>
+  <div class="row"><button class="act" id="pKeep">只保留勾选</button><button class="act" id="pDup">复制勾选</button></div>
+  <div class="row"><button class="act" id="pR90">↻ 90°</button><button class="act" id="pR270">↺ 90°</button></div>
+  <div class="row"><button class="act" id="pOdd">选奇数页</button><button class="act" id="pEven">选偶数页</button></div>
+  <button class="act" id="pBlank">插入空白页</button></div>
+<div class="grp"><h3>合并与整理</h3>
+  <button class="act" id="pAppend">追加 PDF 合并到末尾</button>
+  <input type="file" id="pAppendInput" accept=".pdf" multiple hidden>
+  <button class="act" id="qBatch" data-tip="选多个文件，每个单独去封面后打包 ZIP">一叠 PDF 批量去封面</button>
+  <input type="file" id="qBatchInput" accept=".pdf" multiple hidden>
   <div class="fld"><label>裁掉四周白边（毫米）</label><input type="number" id="qCrop" value="0" min="0" max="40"></div>
   <button class="act" id="qCropBtn">裁剪白边</button>
   <div class="row"><button class="act" id="qNup2">2 合 1</button><button class="act" id="qNup4">4 合 1</button></div></div>
-<div class="selinfo" id="qInfo"></div>`,
-
-pages:`<div class="selinfo" id="pInfo"></div>
-<div class="grp"><h3>选中页</h3>
-  <button class="act danger" id="pDelete">删除选中页</button>
-  <div class="row"><button class="act" id="pKeep">只保留</button><button class="act" id="pDup">复制</button></div>
-  <div class="row"><button class="act" id="pR90">↻ 90°</button><button class="act" id="pR270">↺ 90°</button></div></div>
-<div class="grp"><h3>文档</h3>
-  <button class="act" id="pAppend">追加 PDF 合并到末尾</button>
-  <input type="file" id="pAppendInput" accept=".pdf" multiple hidden>
-  <button class="act" id="pBlank">插入空白页</button>
-  <div class="row"><button class="act" id="pOdd">选奇数页</button><button class="act" id="pEven">选偶数页</button></div></div>
-<div class="selinfo dim" data-tip="拖拽缩略图卡片可以直接调整页面顺序">💡 拖拽卡片可调顺序</div>`,
+<div class="grp"><button class="act danger" id="pReset" data-tip="清空当前 PDF 和图片，回到最开始的状态">清空并重置</button></div>
+<div class="selinfo dim" data-tip="拖拽缩略图卡片可以直接调整页面顺序">拖拽卡片可调顺序 · 顶栏 ↶ 可撤销</div>`,
 
 convert:`<div class="grp"><h3>输出</h3>
   <div class="fld"><label>页面范围</label><select id="cRange"><option value="all">全部页面</option><option value="selected">仅选中页</option></select></div>
@@ -163,6 +159,7 @@ function renderPanel(mod){
   $('#panelBody').innerHTML=PANELS[mod];
   $('#result').innerHTML='';
   if(W.bind[mod])W.bind[mod]();
+  if(mod==='pages'&&W.bind.quick)W.bind.quick(); // 合并面板同时挂上快捷操作
   syncStage();
 }
 function syncStage(){
@@ -172,13 +169,15 @@ function syncStage(){
   $('#drop').classList.toggle('hidden',has||isImg);
   $('#workspace').classList.toggle('hidden',!has||isImg);
   if(has&&!isImg)$('#barTitle').textContent='页面预览';
-  if(W.mod==='pages'||W.mod==='quick')updateSelInfo();
+  if(W.mod==='pages')updateSelInfo();
 }
 function updateSelInfo(){
   const s=sel();
-  const a=$('#pInfo'),b=$('#qInfo');
-  if(a)a.innerHTML=`已选 <b>${s.length}</b> 页${s.length?'：'+s.map(i=>i+1).join('、'):''}`;
-  if(b)b.innerHTML=`当前 <b>${W.pages}</b> 页${s.length?' · 已选 '+s.length+' 页':''}`;
+  const a=$('#pInfo');
+  if(a)a.innerHTML=s.length?`已选 <b>${s.length}</b> 页：${s.map(i=>i+1).join('、')}`
+    :`尚未勾选页面 · 当前 ${W.pages} 页`;
+  const btn=$('#pDelete');
+  if(btn)btn.textContent=s.length?`删除勾选的 ${s.length} 页`:'删除勾选的页';
 }
 
 /* ---------- 模块切换 ---------- */
@@ -234,27 +233,40 @@ document.addEventListener('drop',e=>{
   if(fs.some(f=>/\.pdf$/i.test(f.name)))loadFiles(fs);
 });
 
+let refreshSeq=0;
 async function refresh(){
   if(!W.bytes)return;
-  $('#drop').classList.add('hidden');
+  // 修复「撤销后顺序错乱」：逐页渲染是异步的，快速连续操作时两次刷新会交错写入
+  // W.thumbs / W.pages。这里用令牌作废过期刷新，并在最后一次性原子赋值。
+  const my=++refreshSeq;
+  const label=W.name,size=W.bytes.length;
   const data=new Uint8Array(W.bytes); // pdf.js 会接管传入 buffer，必须给副本
-  const doc=await pdfjsLib.getDocument({data}).promise;
-  W.pages=doc.numPages;W.selected.clear();W.thumbs=[];
-  const g=$('#grid');g.innerHTML='';
-  for(let i=1;i<=doc.numPages;i++){
-    const page=await doc.getPage(i);
-    const vp=page.getViewport({scale:0.42});
-    const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
-    await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
-    W.thumbs.push(cv.toDataURL('image/png'));
+  let doc=null;
+  try{
+    doc=await pdfjsLib.getDocument({data}).promise;
+    const count=doc.numPages,thumbs=[];
+    for(let i=1;i<=count;i++){
+      if(my!==refreshSeq){await doc.destroy();return}
+      const page=await doc.getPage(i);
+      const vp=page.getViewport({scale:0.42});
+      const cv=document.createElement('canvas');cv.width=Math.ceil(vp.width);cv.height=Math.ceil(vp.height);
+      await page.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;
+      thumbs.push(cv.toDataURL('image/png'));
+    }
+    await doc.destroy();doc=null;
+    if(my!==refreshSeq)return;
+    W.thumbs=thumbs;W.pages=count;W.selected.clear();
+    renderGrid();
+    $('#fileChip').innerHTML=`<b>📄 ${esc(label)}</b><span>${count} 页 · ${fmt(size)}</span>`;
+    $('#barMeta').textContent=`${count} 页 · 已选 0 页`;
+    $('#btnSave').disabled=false;$('#btnReset').disabled=false;
+    $('#btnUndo').disabled=W.hIndex<=0;
+    $('#btnRedo').disabled=W.hIndex>=W.history.length-1;
+    syncStage();updateSelInfo();
+  }catch(e){
+    if(doc){try{await doc.destroy()}catch(_){}}
+    if(my===refreshSeq)toast('页面渲染失败：'+e.message,'err');
   }
-  await doc.destroy();
-  renderGrid();
-  $('#fileChip').innerHTML=`<b>📄 ${esc(W.name)}</b><span>${W.pages} 页 · ${fmt(W.bytes.length)}</span>`;
-  $('#barMeta').textContent=`${W.pages} 页 · 已选 0 页`;
-  $('#btnSave').disabled=false;$('#btnUndo').disabled=W.hIndex<=0;
-  $('#btnRedo').disabled=W.hIndex>=W.history.length-1;
-  syncStage();updateSelInfo();
 }
 function renderGrid(){
   const g=$('#grid');g.innerHTML='';
@@ -326,11 +338,29 @@ document.addEventListener('keydown',e=>{
 $('#btnSave').onclick=()=>{
   if(!W.bytes)return;download(W.bytes.slice(),W.name+'.pdf','application/pdf');
 };
+
+/* ---------- 重置：清空当前 PDF 与图片，回到最开始 ---------- */
+function resetAll(){
+  refreshSeq++;                                  // 作废所有进行中的渲染
+  if(W.image&&W.image.src)URL.revokeObjectURL(W.image.src);
+  W.bytes=null;W.name='';W.pages=0;W.selected.clear();W.thumbs=[];
+  W.history=[];W.hIndex=-1;W.image={};
+  $('#imgBefore').removeAttribute('src');$('#imgAfter').removeAttribute('src');
+  $('#imgName').textContent='';$('#imgBeforeInfo').textContent='';$('#imgAfterInfo').textContent='';
+  const ii=$('#iInfo');if(ii)ii.textContent='尚未选择图片';
+  $('#fileChip').innerHTML='<span class="dim">未打开文档</span>';
+  $('#grid').innerHTML='';$('#result').innerHTML='';$('#barMeta').textContent='';
+  $('#btnSave').disabled=true;$('#btnReset').disabled=true;
+  $('#btnUndo').disabled=true;$('#btnRedo').disabled=true;
+  renderPanel('pages');
+  toast('已重置，可以重新导入 PDF 或图片');
+}
+$('#btnReset').onclick=resetAll;
 $('#btnSelAll').onclick=()=>{W.selected=new Set(all());renderGrid();$('#barMeta').textContent=`${W.pages} 页 · 已选 ${W.pages} 页`;updateSelInfo()};
 $('#btnSelNone').onclick=()=>{W.selected.clear();renderGrid();$('#barMeta').textContent=`${W.pages} 页 · 已选 0 页`;updateSelInfo()};
 
 // 等所有功能模块脚本加载完毕再渲染首个面板，确保事件绑定齐全
-window.addEventListener('load',()=>renderPanel('quick'));
+window.addEventListener('load',()=>renderPanel('pages'));
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
