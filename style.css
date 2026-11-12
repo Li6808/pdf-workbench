@@ -162,18 +162,21 @@ input[type=range]{width:100%;accent-color:var(--accent);padding:0;border:0;backg
 .tabbar{display:none}
 @media(max-width:860px){
   :root{--top:52px}
-  .shell{grid-template-columns:minmax(0,1fr);height:calc(100dvh - var(--top) - 62px)}
+  .shell{grid-template-columns:minmax(0,1fr);height:calc(100dvh - var(--top) - 76px)}
   .rail{display:none}
-  .stage{padding:10px}
+  .stage{padding:8px}
   .bar{flex-wrap:wrap;gap:6px}
   .view-switch{order:3}
   .single-canvas{max-height:calc(100dvh - 250px);padding:10px}
-  .panel{position:fixed;left:0;right:0;bottom:62px;top:auto;width:100%;box-sizing:border-box;height:min(64dvh,520px);z-index:20;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);transform:translateY(0);transition:transform .2s}
+  .panel{position:fixed;left:0;right:0;bottom:76px;top:auto;width:100%;box-sizing:border-box;height:min(64dvh,520px);z-index:20;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.18);transform:translateY(0);transition:transform .2s}
   .panel.closed{transform:translateY(100%)}
   .panel-head{border-radius:16px 16px 0 0}
-  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;height:62px;gap:0;background:var(--surface);border-top:1px solid var(--line);z-index:30;padding:0 2px env(safe-area-inset-bottom)}
-  .tab{min-width:0;flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0;color:var(--muted);font-size:11px;letter-spacing:.02em}
-  .tab svg{width:21px;height:21px}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;min-height:76px;height:auto;gap:0;
+    background:var(--surface);border-top:1px solid var(--line);z-index:30;
+    padding:8px 6px max(env(safe-area-inset-bottom),10px)}
+  .tab{min-width:0;flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:5px;min-height:56px;padding:8px 2px;color:var(--muted);font-size:12px;letter-spacing:.02em}
+  .tab svg{width:24px;height:24px}
   .tab.on{color:var(--accent)}
   .top .btn span{display:none}
   .top .btn{width:34px;padding:0;justify-content:center}
@@ -182,6 +185,15 @@ input[type=range]{width:100%;accent-color:var(--accent);padding:0;border:0;backg
   .thumb{height:130px}
   .cmp{grid-template-columns:1fr}
   .cmp-box{height:220px}
-  .toasts{bottom:70px;right:10px;left:10px}
+  .toasts{bottom:84px;right:10px;left:10px}
   .toast{max-width:none}
+}
+/* 添加到手机主屏（PWA standalone）后底栏再放大，避开底部安全区 */
+@media (display-mode:standalone) and (max-width:860px){
+  .shell{height:calc(100dvh - var(--top) - 90px)}
+  .panel{bottom:90px}
+  .tabbar{min-height:90px;padding:12px 6px max(env(safe-area-inset-bottom),16px)}
+  .tab{min-height:64px;font-size:12px}
+  .tab svg{width:26px;height:26px}
+  .toasts{bottom:104px}
 }
