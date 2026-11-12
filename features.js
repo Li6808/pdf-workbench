@@ -1,4 +1,4 @@
-/* 案头 · 功能实现 */
+/* 遇柒 · 功能实现 */
 (() => {
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
