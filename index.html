@@ -26,6 +26,7 @@
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15A8 8 0 0 1 9 4a8 8 0 1 0 11 11z"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4 1-1.4 2M12 17h.01"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></symbol>
 </svg>
 
 <header class="top">
@@ -34,6 +35,7 @@
   <div class="spacer"></div>
   <button class="ico" id="btnUndo" data-tip="撤销上一步" disabled><svg><use href="#i-undo"/></svg></button>
   <button class="ico" id="btnRedo" data-tip="重做" disabled><svg><use href="#i-redo"/></svg></button>
+  <button class="ico" id="btnReset" data-tip="重置：清空当前 PDF 和图片，回到初始状态" disabled><svg><use href="#i-reset"/></svg></button>
   <button class="ico" id="btnTheme" data-tip="切换深浅色"><svg><use href="#i-sun"/></svg></button>
   <button class="btn primary" id="btnOpen"><svg><use href="#i-open"/></svg><span>打开 PDF</span></button>
   <button class="btn" id="btnSave" data-tip="下载当前 PDF" disabled><svg><use href="#i-save"/></svg><span>保存</span></button>
@@ -42,12 +44,11 @@
 
 <div class="shell">
   <nav class="rail" id="rail">
-    <button class="rail-btn on" data-mod="quick" data-tip="快捷处理 · 删封面、批量删页"><svg><use href="#i-bolt"/></svg></button>
-    <button class="rail-btn" data-mod="pages" data-tip="页面管理 · 删除、旋转、排序"><svg><use href="#i-page"/></svg></button>
-    <button class="rail-btn" data-mod="convert" data-tip="格式转换 · Word、文字、网页"><svg><use href="#i-convert"/></svg></button>
-    <button class="rail-btn" data-mod="edit" data-tip="编辑批注 · 水印、页码"><svg><use href="#i-pen"/></svg></button>
-    <button class="rail-btn" data-mod="image" data-tip="图片压缩 · 改尺寸、压到指定 KB"><svg><use href="#i-image"/></svg></button>
-    <button class="rail-btn" data-mod="export" data-tip="拆分导出 · 图片、分段拆分"><svg><use href="#i-export"/></svg></button>
+    <button class="rail-btn on" data-mod="pages" data-tip="页面 · 勾选删除、合并、拆分前的整理"><svg><use href="#i-page"/></svg><span>页面</span></button>
+    <button class="rail-btn" data-mod="convert" data-tip="转换 · Word、文字、网页"><svg><use href="#i-convert"/></svg><span>转换</span></button>
+    <button class="rail-btn" data-mod="edit" data-tip="编辑 · 水印、页码、插入文字"><svg><use href="#i-pen"/></svg><span>编辑</span></button>
+    <button class="rail-btn" data-mod="image" data-tip="图片 · 改尺寸、压到指定 KB"><svg><use href="#i-image"/></svg><span>图片</span></button>
+    <button class="rail-btn" data-mod="export" data-tip="导出 · 分页图片、分段拆分"><svg><use href="#i-export"/></svg><span>导出</span></button>
     <div class="rail-spacer"></div>
     <button class="rail-btn" id="btnHelp" data-tip="使用说明"><svg><use href="#i-help"/></svg></button>
   </nav>
@@ -91,8 +92,7 @@
 </div>
 
 <nav class="tabbar" id="tabbar">
-  <button class="tab on" data-mod="quick"><svg><use href="#i-bolt"/></svg><span>快捷</span></button>
-  <button class="tab" data-mod="pages"><svg><use href="#i-page"/></svg><span>页面</span></button>
+  <button class="tab on" data-mod="pages"><svg><use href="#i-page"/></svg><span>页面</span></button>
   <button class="tab" data-mod="convert"><svg><use href="#i-convert"/></svg><span>转换</span></button>
   <button class="tab" data-mod="edit"><svg><use href="#i-pen"/></svg><span>编辑</span></button>
   <button class="tab" data-mod="image"><svg><use href="#i-image"/></svg><span>图片</span></button>
@@ -106,8 +106,7 @@
   <h2>PDF 工作台</h2>
   <p>所有处理都在你的浏览器里完成，文件不会上传到任何服务器。</p>
   <ul>
-    <li><b>快捷</b>：一键删封面、按页码批量删页、裁剪、压缩、多页合一</li>
-    <li><b>页面</b>：勾选后删除 / 保留 / 旋转 / 复制，拖拽卡片调整顺序</li>
+    <li><b>页面</b>：勾选哪页就删哪页、一键删封面、按页码批量删、旋转 / 复制 / 拖拽排序、追加合并、多页合一</li>
     <li><b>转换</b>：Word、TXT、Markdown、网页、CSV</li>
     <li><b>编辑</b>：水印、页码（中文也支持）</li>
     <li><b>图片</b>：证件照改尺寸、压到指定 KB</li>
