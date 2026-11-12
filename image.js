@@ -32,6 +32,7 @@ W.pickImage=async file=>{
     $('#imgAfter').removeAttribute('src');$('#imgAfterInfo').textContent='点「开始调整」生成';
     $('#imgStage').classList.remove('hidden');
     $('#drop').classList.add('hidden');$('#workspace').classList.add('hidden');
+    $('#btnReset').disabled=false; // 只导入图片时也能一键重置
     toast('图片已载入');
   }catch(e){toast('图片读取失败','err')}
 };
