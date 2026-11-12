@@ -1,4 +1,4 @@
-/* 案头 · 图片尺寸 / 体积调整（Canvas，全程本地） */
+/* 遇柒 · 图片尺寸 / 体积调整（Canvas，全程本地） */
 (() => {
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
